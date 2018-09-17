@@ -57,7 +57,6 @@ export default {
 
 <style lang="scss">
 @import '~piet';
-
 body {
 	display: flex;
 	height: 100vh;

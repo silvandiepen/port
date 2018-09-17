@@ -2,7 +2,6 @@
 @import 'vars';
 @import 'typography/embed';
 @import '~piet/custom-output';
-
 $output: set-output(css, true);
 
 @import '~piet';
