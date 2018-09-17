@@ -2,10 +2,10 @@
 	<section class="intro">
 		<div class="convert">
 			<div class="input-text input">
-				<input placeholder="type a name to convert" type="text" v-model="insert" max-length="10" />
+				<input ref="insert" placeholder="type a name to convert" type="text" v-model="insert" max-length="10" />
 			</div>
 			<div class="input-text output">
-				<input type="text" v-model="output" />
+				<input ref="output" type="text" v-model="output" @click="selectText" />
 			</div>
 		</div>
 	</section>
@@ -45,7 +45,18 @@ export default {
 				}
 			}
 			this.output = output.join('');
+		},
+		selectText() {
+			this.$refs.output.focus();
+			this.$refs.output.select();
 		}
+	},
+	mounted() {
+		let _this = this;
+		setTimeout(function() {
+			_this.$refs.insert.focus();
+		}, 500);
+		// console.log(this.$refs.insert);
 	},
 	watch: {
 		insert: function(val, oldVal) {
@@ -77,6 +88,14 @@ input {
 		color: color(White, 0.15);
 		opacity: 1;
 	}
+	&,
+	&:focus {
+		outline: none;
+	}
+}
+::selection {
+	color: color(Black);
+	background: color(Orange);
 }
 .output input {
 	background-color: none;
