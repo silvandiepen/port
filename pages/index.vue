@@ -1,8 +1,10 @@
 <template>
 	<section class="intro">
+		<div class="bg"></div>
+		<div class="bg"></div>
 		<div class="convert">
 			<div class="input-text input">
-				<input ref="insert" placeholder="type a name to convert" type="text" v-model="insert" max-length="10" />
+				<input ref="insert" placeholder="type a name" type="text" v-model="insert" max-length="10" />
 			</div>
 			<div class="input-text output">
 				<input ref="output" type="text" v-model="output" @click="selectText" />
@@ -73,7 +75,7 @@ body {
 	height: 100vh;
 	align-items: center;
 	justify-content: center;
-	background-color: color(Black, 0.95);
+	background-color: color(Black, 1);
 }
 input {
 	background-color: transparent;
@@ -108,9 +110,74 @@ input {
 	}
 }
 .convert {
-	background-color: color(Black, 1);
+	background-color: color(Black, 0.5);
 	width: auto;
 	padding: grid(1);
 	border-radius: 4px;
+	position: relative;
+	z-index: 10;
+	@media #{$small-only} {
+		padding: 60px;
+	}
+}
+
+.bg {
+	width: 70vw;
+	height: 70vw;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	filter: blur(15vw);
+	background-color: color(Blue, 0.25);
+	animation: bg 20s linear infinite;
+	& + .bg {
+		animation: bg 20s 5s linear infinite;
+	}
+}
+@keyframes bg {
+	0% {
+		background-color: color(Blue, 0.25);
+		transform: translateY(-50%) translateX(-50%) scale(1, 1) rotate(0deg);
+	}
+	10% {
+		background-color: color(Purple, 0.25);
+		transform: translateY(-60%) translateX(-40%) scale(0.5, 1.25) rotate(10deg);
+	}
+	20% {
+		background-color: color(Yellow, 0.25);
+		transform: translateY(-20%) translateX(40%) scale(0.8, 1.5) rotate(-10deg);
+	}
+	30% {
+		background-color: color(Orange, 0.25);
+		transform: translateY(10%) translateX(60%) scale(1.2, 0.8) rotate(-15deg);
+	}
+	40% {
+		background-color: color(Green, 0.25);
+		transform: translateY(-60%) translateX(-20%) scale(0.2, 1.8) rotate(35deg);
+	}
+	50% {
+		background-color: color(Turquoise, 0.25);
+		transform: translateY(20%) translateX(20%) scale(1.2, 0.8) rotate(15deg);
+	}
+	60% {
+		background-color: color(Pink, 0.25);
+		transform: translateY(20%) translateX(20%) scale(1.2, 1.8) rotate(0deg);
+	}
+	70% {
+		background-color: color(Brown, 0.25);
+		transform: translateY(20%) translateX(-20%) scale(1.5, 0.8) rotate(45deg);
+	}
+	80% {
+		background-color: color(Red, 0.25);
+		transform: translateY(-20%) translateX(20%) scale(0.2, 0.8) rotate(15deg);
+	}
+	90% {
+		background-color: color(Red, 0.25);
+		transform: translateY(-120%) translateX(-120%) scale(1.2, 0.8) rotate(15deg);
+	}
+	100% {
+		background-color: color(Blue, 0.25);
+		transform: translateY(-50%) translateX(-50%) scale(1, 1) rotate(0deg);
+	}
 }
 </style>
