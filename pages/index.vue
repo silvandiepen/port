@@ -1,13 +1,13 @@
 <template>
-	<section class="intro">
-		<div class="bg"></div>
-		<div class="bg"></div>
-		<div class="convert">
-			<div class="input-text input">
-				<input ref="insert" placeholder="type a name" type="text" v-model="insert" max-length="10" />
+	<section class="container port">
+		<div class="port__panel">
+			<h1 class="port__logo">:port</h1>
+			<div class="input-text port__input">
+				<input ref="insert" placeholder="port" type="text" v-model="insert" max-length="10" />
 			</div>
-			<div class="input-text output">
-				<input ref="output" type="text" v-model="output" @click="selectText" />
+			<div class="input-text port__output">
+				<input placeholder="7678" ref="output" type="text" v-model="output" @click="selectText" />
+				<button type="button" @click="doCopy" :class="{ active: output.length > 0 }">{{copyLabel}}</button>
 			</div>
 		</div>
 	</section>
@@ -17,6 +17,7 @@
 export default {
 	data() {
 		return {
+			copyLabel: 'Copy',
 			insert: '',
 			output: '',
 			table: [
@@ -51,6 +52,17 @@ export default {
 		selectText() {
 			this.$refs.output.focus();
 			this.$refs.output.select();
+		},
+		doCopy: function() {
+			let _this = this;
+			_this.$copyText(this.output).then(
+				function(e) {
+					_this.copyLabel = 'Copied!';
+				},
+				function(e) {
+					_this.copyLabel = 'Couldnt copy :(';
+				}
+			);
 		}
 	},
 	mounted() {
@@ -58,7 +70,6 @@ export default {
 		setTimeout(function() {
 			_this.$refs.insert.focus();
 		}, 500);
-		// console.log(this.$refs.insert);
 	},
 	watch: {
 		insert: function(val, oldVal) {
@@ -75,7 +86,85 @@ body {
 	height: 100vh;
 	align-items: center;
 	justify-content: center;
-	background-color: color(Black, 1);
+}
+::selection {
+	color: color(Black);
+	background: color(Orange);
+}
+.port {
+	&__logo {
+		position: absolute;
+		left: -1rem;
+		top: 0;
+		border: none;
+		width: 8rem;
+		height: 4rem;
+		line-height: 4rem;
+		text-align: center;
+		font-size: 1.5rem;
+		font-family: 'Courier New', Courier, monospace;
+		border-radius: 2px;
+		transform: translateY(-50%);
+		background-color: color(Blue);
+		color: color(White);
+		font-weight: bold;
+		box-shadow: 0 -4px 0 0 darken(Blue, 10%) inset,
+			0 0.5rem 1rem 0 color(Black, 0.05);
+	}
+	&__panel {
+		background-color: color(White);
+		width: auto;
+		padding: 4rem 2rem;
+		border-radius: 2px;
+		box-shadow: 0 -4px 0 0 color(Blue) inset, 0 0.5rem 1rem 0 color(Black, 0.05);
+		position: relative;
+		z-index: 10;
+		@media #{$small-only} {
+			padding: 60px;
+		}
+	}
+	&__output {
+		position: relative;
+		input {
+			background-color: none;
+			text-align: center;
+			border: 2px solid color(Blue, 0.5);
+			font-family: 'Courier New', Courier, monospace;
+			color: color(Orange);
+			border-radius: 3rem;
+		}
+		button {
+			position: absolute;
+			right: 1rem;
+			top: 50%;
+			width: 4rem;
+			height: 3rem;
+			transform: translateY(-50%);
+			border: none;
+			background: transparent;
+			color: color(Blue);
+			font-size: 1rem;
+			transform: translateY(-50%) scale(0);
+			&:focus {
+				outline: none;
+				color: color(Orange);
+			}
+			&.active {
+				animation: popIn 0.2s ease-in-out forwards;
+			}
+		}
+	}
+}
+@keyframes popIn {
+	0% {
+		transform: translateY(-50%) scale(0);
+	}
+	80% {
+		transform: translateY(-50%) scale(1.2);
+	}
+	100% {
+		transform: translateY(-50%) scale(1);
+	}
 }
 input {
 	background-color: transparent;
@@ -85,99 +174,14 @@ input {
 	font-size: 2rem;
 	border: none;
 	caret-color: color(Orange);
-	color: color(White);
+	color: color(Black);
 	&::placeholder {
-		color: color(White, 0.15);
+		color: color(Black, 0.05);
 		opacity: 1;
 	}
 	&,
 	&:focus {
 		outline: none;
-	}
-}
-::selection {
-	color: color(Black);
-	background: color(Orange);
-}
-.output input {
-	background-color: none;
-	text-align: center;
-	border: 2px solid color(White, 0.25);
-	font-family: 'Courier New', Courier, monospace;
-	color: color(Orange);
-	&:empty {
-		border: 2px solid color(Orange, 0.25);
-	}
-}
-.convert {
-	background-color: color(Black, 0.5);
-	width: auto;
-	padding: grid(1);
-	border-radius: 4px;
-	position: relative;
-	z-index: 10;
-	@media #{$small-only} {
-		padding: 60px;
-	}
-}
-
-.bg {
-	width: 70vw;
-	height: 70vw;
-	position: absolute;
-	left: 50%;
-	top: 50%;
-	filter: blur(15vw);
-	background-color: color(Blue, 0.25);
-	animation: bg 20s linear infinite;
-	& + .bg {
-		animation: bg 20s 5s linear infinite;
-	}
-}
-@keyframes bg {
-	0% {
-		background-color: color(Blue, 0.25);
-		transform: translateY(-50%) translateX(-50%) scale(1, 1) rotate(0deg);
-	}
-	10% {
-		background-color: color(Purple, 0.25);
-		transform: translateY(-60%) translateX(-40%) scale(0.5, 1.25) rotate(10deg);
-	}
-	20% {
-		background-color: color(Yellow, 0.25);
-		transform: translateY(-20%) translateX(40%) scale(0.8, 1.5) rotate(-10deg);
-	}
-	30% {
-		background-color: color(Orange, 0.25);
-		transform: translateY(10%) translateX(60%) scale(1.2, 0.8) rotate(-15deg);
-	}
-	40% {
-		background-color: color(Green, 0.25);
-		transform: translateY(-60%) translateX(-20%) scale(0.2, 1.8) rotate(35deg);
-	}
-	50% {
-		background-color: color(Turquoise, 0.25);
-		transform: translateY(20%) translateX(20%) scale(1.2, 0.8) rotate(15deg);
-	}
-	60% {
-		background-color: color(Pink, 0.25);
-		transform: translateY(20%) translateX(20%) scale(1.2, 1.8) rotate(0deg);
-	}
-	70% {
-		background-color: color(Brown, 0.25);
-		transform: translateY(20%) translateX(-20%) scale(1.5, 0.8) rotate(45deg);
-	}
-	80% {
-		background-color: color(Red, 0.25);
-		transform: translateY(-20%) translateX(20%) scale(0.2, 0.8) rotate(15deg);
-	}
-	90% {
-		background-color: color(Red, 0.25);
-		transform: translateY(-120%) translateX(-120%) scale(1.2, 0.8) rotate(15deg);
-	}
-	100% {
-		background-color: color(Blue, 0.25);
-		transform: translateY(-50%) translateX(-50%) scale(1, 1) rotate(0deg);
 	}
 }
 </style>
