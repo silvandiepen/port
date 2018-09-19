@@ -175,7 +175,7 @@ export default {
 			padding: 1rem;
 			font-size: 2rem;
 			border: none;
-			caret-color: color(Orange);
+			caret-color: color(Pink);
 			text-align: center;
 			color: color(Black);
 			&::placeholder {
