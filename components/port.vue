@@ -218,7 +218,9 @@ export default {
 		}
 		.btn {
 			position: absolute;
-			right: 1.5rem;
+			right: 1rem;
+			text-shadow: 0 0 10px color(White), 0 0 10px color(White),
+				0 0 10px color(White), 0 0 10px color(White);
 			top: 50%;
 			width: 5rem;
 			height: 3rem;
@@ -250,6 +252,9 @@ export default {
 				border: 2px solid color(lightGreen, 1);
 			}
 		}
+	}
+	input {
+		box-shadow: none;
 	}
 }
 @keyframes popIn {
