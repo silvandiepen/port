@@ -4,6 +4,8 @@
 @import '~piet/custom-output';
 $output: set-output(css, true);
 
+$output: set-output(button, true);
+
 @import '~piet';
 
 @import 'typography/index';
