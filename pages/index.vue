@@ -2,12 +2,15 @@
 	<section class="container port">
 		<div class="port__panel">
 			<h1 class="port__logo">:port</h1>
-			<div class="input-text port__input">
-				<input ref="insert" placeholder="port" type="text" v-model="insert" max-length="10" />
+			<div class="input-text port__input" :class="{'port__input--active' : output.length > 0 }">
+				<input ref="insert" placeholder="port name" type="text" v-model="insert" max-length="10" />
 			</div>
-			<div class="input-text port__output">
+			<div class="input-text port__output" :class="{'port__output--active' : output.length > 0,'port__output--copied' : copy.active }">
 				<input placeholder="7678" ref="output" type="text" v-model="output" @click="selectText" />
-				<button type="button" @click="doCopy" :class="{ active: output.length > 0 }">{{copyLabel}}</button>
+				<button class="btn" type="button" @click="doCopy" :class="{ active: output.length > 0, 'btn--copied' : copy.active }">
+					<span v-if="copy.active">{{copy.txt.active}}</span>
+					<span v-else>{{copy.txt.default}}</span>
+				</button>
 			</div>
 		</div>
 	</section>
@@ -17,7 +20,15 @@
 export default {
 	data() {
 		return {
-			copyLabel: 'Copy',
+			copy: {
+				active: false,
+				value: '',
+				txt: {
+					default: 'Copy',
+					active: 'Copied!'
+				}
+			},
+
 			insert: '',
 			output: '',
 			table: [
@@ -46,6 +57,9 @@ export default {
 						output.push(l);
 					}
 				}
+				if (!isNaN(char)) {
+					output.push(char);
+				}
 			}
 			this.output = output.join('');
 		},
@@ -57,10 +71,12 @@ export default {
 			let _this = this;
 			_this.$copyText(this.output).then(
 				function(e) {
-					_this.copyLabel = 'Copied!';
+					_this.copy.active = true;
+					_this.copy.value = _this.output;
 				},
 				function(e) {
-					_this.copyLabel = 'Couldnt copy :(';
+					_this.copy.active = false;
+					_this.copy.value = _this.output;
 				}
 			);
 		}
@@ -74,12 +90,14 @@ export default {
 	watch: {
 		insert: function(val, oldVal) {
 			this.convertToNumbers(val);
+			this.copy.active = false;
 		}
 	}
 };
 </script>
 
 <style lang="scss">
+@import './assets/scss/vars';
 @import '~piet';
 body {
 	display: flex;
@@ -89,7 +107,17 @@ body {
 }
 ::selection {
 	color: color(Black);
-	background: color(Orange);
+	background: color(lightBlue, 0.25);
+}
+@keyframes comeIn {
+	from {
+		transform: translateY(100%);
+		opacity: 0;
+	}
+	to {
+		transform: translateY(0%);
+		opacity: 1;
+	}
 }
 .port {
 	&__logo {
@@ -105,52 +133,127 @@ body {
 		font-family: 'Courier New', Courier, monospace;
 		border-radius: 2px;
 		transform: translateY(-50%);
-		background-color: color(Blue);
+		background-color: color(Pink);
 		color: color(White);
 		font-weight: bold;
-		box-shadow: 0 -4px 0 0 darken(Blue, 10%) inset,
+		box-shadow: 0 -4px 0 0 darken(Pink, 10%) inset,
 			0 0.5rem 1rem 0 color(Black, 0.05);
 	}
 	&__panel {
-		background-color: color(White);
-		width: auto;
-		padding: 4rem 2rem;
-		border-radius: 2px;
-		box-shadow: 0 -4px 0 0 color(Blue) inset, 0 0.5rem 1rem 0 color(Black, 0.05);
+		transform: translateY(100%);
+		@for $i from 1 through 10 {
+			&:nth-child(#{$i}) {
+				animation: comeIn 0.3s #{$i/10}s cubic-bezier(0, 1.3, 1, 1.18) forwards;
+			}
+		}
+		width: 100%;
+		counter-increment: provider;
 		position: relative;
-		z-index: 10;
-		@media #{$small-only} {
-			padding: 60px;
+
+		padding: 2rem;
+		// display: inline-block;
+		background-color: color(White, 1);
+		transition: background 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+		background-size: 100% 200%;
+		background-position: 50% 0;
+		box-shadow: 0 -4px 0 0 color(lightBlue) inset,
+			0 0.5rem 1rem 0 color(Black, 0.1);
+		border-radius: 4px;
+		justify-content: space-between;
+		& + .map-compare__provider {
+			margin-top: 1rem;
+		}
+		background-image: linear-gradient(
+			to bottom,
+			color(Green, 0) 50%,
+			color(Green, 0.1),
+			color(Green, 0.3)
+		);
+	}
+	&__input {
+		transform: translateY(50%) scale(1.2);
+
+		transition: transform 0.3s cubic-bezier(0, 1.3, 1, 1.18);
+		input {
+			background-color: transparent;
+			width: 100%;
+			border-radius: 5px;
+			padding: 1rem;
+			font-size: 2rem;
+			border: none;
+			caret-color: color(Orange);
+			text-align: center;
+			color: color(Black);
+			&::placeholder {
+				color: color(Black, 0.05);
+				opacity: 1;
+			}
+			&,
+			&:focus {
+				outline: none;
+			}
+		}
+		&--active {
+			transform: translateY(0) scale(1);
 		}
 	}
 	&__output {
 		position: relative;
+		transform: scale(0.5);
+		opacity: 0;
+		transition: transform 0.3s cubic-bezier(0, 1.3, 1, 1.18),
+			opacity 0.3s cubic-bezier(0, 1.3, 1, 1.18);
 		input {
+			width: 100%;
+			border-radius: 5px;
+			padding: 1rem;
+			font-size: 2rem;
 			background-color: none;
 			text-align: center;
-			border: 2px solid color(Blue, 0.5);
+			border: 2px solid color(Pink, 0.5);
 			font-family: 'Courier New', Courier, monospace;
-			color: color(Orange);
+			color: color(Pink);
 			border-radius: 3rem;
+			&:focus {
+				border: 2px solid color(Pink, 1);
+			}
+			&,
+			&:focus {
+				outline: none;
+			}
 		}
-		button {
+		.btn {
 			position: absolute;
-			right: 1rem;
+			right: 1.5rem;
 			top: 50%;
-			width: 4rem;
+			width: 5rem;
 			height: 3rem;
-			transform: translateY(-50%);
 			border: none;
 			background: transparent;
-			color: color(Blue);
+			color: darken(Pink, 10%);
 			font-size: 1rem;
 			transform: translateY(-50%) scale(0);
 			&:focus {
 				outline: none;
-				color: color(Orange);
+				color: color(lightBlue);
 			}
-			&.active {
+			&--copied {
+				transform: translateY(-50%) scale(1);
+			}
+		}
+		&:hover {
+			button {
 				animation: popIn 0.2s ease-in-out forwards;
+			}
+		}
+		&--active {
+			opacity: 1;
+			transform: scale(1);
+		}
+		&--copied {
+			input,
+			input:focus {
+				border: 2px solid color(lightGreen, 1);
 			}
 		}
 	}
@@ -164,24 +267,6 @@ body {
 	}
 	100% {
 		transform: translateY(-50%) scale(1);
-	}
-}
-input {
-	background-color: transparent;
-	width: 100%;
-	border-radius: 5px;
-	padding: 1rem;
-	font-size: 2rem;
-	border: none;
-	caret-color: color(Orange);
-	color: color(Black);
-	&::placeholder {
-		color: color(Black, 0.05);
-		opacity: 1;
-	}
-	&,
-	&:focus {
-		outline: none;
 	}
 }
 </style>
