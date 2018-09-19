@@ -3,7 +3,7 @@
 		<div class="port__panel">
 			<h1 class="port__logo">:port</h1>
 			<div class="input-text port__input" :class="{'port__input--active' : output.length > 0 }">
-				<input ref="insert" placeholder="port name" type="text" v-model="insert" max-length="10" />
+				<input ref="insert" placeholder="port name" type="text" v-model="insert" max-length="10" @keyup.enter="selectText" />
 			</div>
 			<div class="input-text port__output" :class="{'port__output--active' : output.length > 0,'port__output--copied' : copy.active }">
 				<input placeholder="7678" ref="output" type="text" v-model="output" @click="selectText" />
